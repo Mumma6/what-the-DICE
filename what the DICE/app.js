@@ -1,9 +1,9 @@
 /**********************************************
-*** What the DICE.
+* What the DICE.
 **********************************************/
 
-/// Varibels for player score, round score, who is the active player and is the game running.
-var scores, roundScore, activePlayer, gamePlaying;
+/// All the variables for the game
+var scores, roundScore, activePlayer, gamePlaying, lastDice;
 
 /// Call the function that starts the game.
 init();
@@ -19,15 +19,30 @@ document.querySelector(".btn-roll").addEventListener("click", function() {
 		diceDOM.style.display = "block";
 		diceDOM.src = "dice-" + dice + ".png";
 
+		/// If you cast the same number twice you lose your current score
+		if (dice === 1 && lastDice === 1 || 
+			dice === 2 && lastDice === 2 ||
+			dice === 3 && lastDice === 3 ||
+			dice === 4 && lastDice === 4 ||
+			dice === 5 && lastDice === 5 ||
+			dice === 6 && lastDice === 6) {
+			scores[activePlayer] = 0;
+			document.querySelector("#current-" + activePlayer).textContent = 0;
+			document.querySelector(".btn-roll").disabled = true;
+			setTimeout(nextPlayer, 1500);
 		// Update the round score IF the rolled number is NOT a 1.
-		if (dice !== 1) {
+		} else if (dice !== 1) {
 			// Add score and display it.
 			roundScore += dice;
 			document.querySelector("#current-" + activePlayer).textContent = roundScore;
+			///diceDOM.style.border = "none";
 		} else {
-			// next players turn.
-			nextPlayer();
+			//diceDOM.style.border = "10px solid red";
+			document.querySelector(".btn-roll").disabled = true;
+			setTimeout(nextPlayer, 1500);	
 		}
+
+		lastDice = dice;
 	}
 });
 
@@ -63,8 +78,13 @@ function nextPlayer() {
 
 		document.querySelector(".player-0-panel").classList.toggle("active");
 		document.querySelector(".player-1-panel").classList.toggle("active");
-
+		
 		document.querySelector(".dice").style.display = "none";
+		document.querySelector(".btn-roll").disabled = false;
+
+		/// Resting the value of lastDice or else the nextplayer gets fucked
+		lastDice = 0;
+		
 };
 
 /// Add the New Game button and function.
